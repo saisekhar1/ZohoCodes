@@ -1,0 +1,210 @@
+cur_date = zoho.currentdate;
+info cur_date;
+deal_fetch = zoho.crm.getRecordById("Deals",deal_id);
+deal_name = deal_fetch.get("Deal_Name");
+//list is used for storing dates in an array
+var_list = list();
+map_Var = Map();
+map_Var.put("Subject",deal_name + " Check the Availability");
+map_Var.put("$se_module","Deals");
+map_Var.put("What_Id",deal_id);
+alaram_data = Map();
+if(cur_date.toString("EEEE") = "Monday")
+{
+	info "monday Executed";
+	Task_Date1 = cur_date;
+	Task_Date2 = Task_Date1.addDay(7);
+	Task_Date3 = Task_Date2.addDay(7);
+	Task_Date4 = Task_Date3.addDay(7);
+	list_Var = {Task_Date1,Task_Date2,Task_Date3,Task_Date4};
+	for each  ele in list_Var
+	{
+		Month = ele.getMonth();
+		Day = ele.getDay();
+		if(Month <= 9)
+		{
+			Month = "0" + Month;
+		}
+		if(Day <= 9)
+		{
+			Day = "0" + Day;
+		}
+		update_date = ele.getYear() + "-" + Month + "-" + Day;
+		map_Var.put("Due_Date",update_date);
+		to_Str = update_date.toString("yyyy-MM-dd");
+		alaram_data.put("ALARM","FREQ=NONE;ACTION=EMAILANDPOPUP;TRIGGER=DATE-TIME:" + to_Str + "T09:00:00+04:00");
+		map_Var.put("Remind_At",alaram_data);
+		info map_Var;
+		crt_Rec = zoho.crm.createRecord("Tasks",map_Var);
+		info crt_Rec;
+	}
+}
+else if(cur_date.toString("EEEE") = "Tuesday")
+{
+	Task_Date1 = cur_date.addDay(6);
+	Task_Date2 = Task_Date1.addDay(7);
+	Task_Date3 = Task_Date2.addDay(7);
+	Task_Date4 = Task_Date3.addDay(7);
+	list_Var = {Task_Date1,Task_Date2,Task_Date3,Task_Date4};
+	for each  ele in list_Var
+	{
+		Month = ele.getMonth();
+		Day = ele.getDay();
+		if(Month <= 9)
+		{
+			Month = "0" + Month;
+		}
+		if(Day <= 9)
+		{
+			Day = "0" + Day;
+		}
+		update_date = ele.getYear() + "-" + Month + "-" + Day;
+		map_Var.put("Due_Date",update_date);
+		to_Str = update_date.toString("yyyy-MM-dd");
+		alaram_data.put("ALARM","FREQ=NONE;ACTION=EMAILANDPOPUP;TRIGGER=DATE-TIME:" + to_Str + "T09:00:00+04:00");
+		map_Var.put("Remind_At",alaram_data);
+		crt_Rec = zoho.crm.createRecord("Tasks",map_Var);
+		info crt_Rec;
+	}
+}
+else if(cur_date.toString("EEEE") = "Wednesday")
+{
+	info "IN WEDNESDAY";
+	Task_Date1 = cur_date.addDay(5);
+	Task_Date2 = Task_Date1.addDay(7);
+	Task_Date3 = Task_Date2.addDay(7);
+	Task_Date4 = Task_Date3.addDay(7);
+	list_Var = {Task_Date1,Task_Date2,Task_Date3,Task_Date4};
+	for each  ele in list_Var
+	{
+		Month = ele.getMonth();
+		Day = ele.getDay();
+		if(Month <= 9)
+		{
+			Month = "0" + Month;
+		}
+		if(Day <= 9)
+		{
+			Day = "0" + Day;
+		}
+		update_date = ele.getYear() + "-" + Month + "-" + Day;
+		map_Var.put("Due_Date",update_date);
+		to_Str = update_date.toString("yyyy-MM-dd");
+		alaram_data.put("ALARM","FREQ=NONE;ACTION=EMAILANDPOPUP;TRIGGER=DATE-TIME:" + to_Str + "T09:00:00+04:00");
+		map_Var.put("Remind_At",alaram_data);
+		crt_Rec = zoho.crm.createRecord("Tasks",map_Var);
+		info crt_Rec;
+	}
+}
+else if(cur_date.toString("EEEE") = "Thursday")
+{
+	Task_Date1 = cur_date.addDay(4);
+	Task_Date2 = Task_Date1.addDay(7);
+	Task_Date3 = Task_Date2.addDay(7);
+	Task_Date4 = Task_Date3.addDay(7);
+	list_Var = {Task_Date1,Task_Date2,Task_Date3,Task_Date4};
+	for each  ele in list_Var
+	{
+		Month = ele.getMonth();
+		Day = ele.getDay();
+		if(Month <= 9)
+		{
+			Month = "0" + Month;
+		}
+		if(Day <= 9)
+		{
+			Day = "0" + Day;
+		}
+		update_date = ele.getYear() + "-" + Month + "-" + Day;
+		map_Var.put("Due_Date",update_date);
+		to_Str = update_date.toString("yyyy-MM-dd");
+		alaram_data.put("ALARM","FREQ=NONE;ACTION=EMAILANDPOPUP;TRIGGER=DATE-TIME:" + to_Str + "T09:00:00+04:00");
+		map_Var.put("Remind_At",alaram_data);
+		crt_Rec = zoho.crm.createRecord("Tasks",map_Var);
+		info crt_Rec;
+	}
+}
+else if(cur_date.toString("EEEE") = "Friday")
+{
+	Task_Date1 = cur_date.addDay(3);
+	Task_Date2 = Task_Date1.addDay(7);
+	Task_Date3 = Task_Date2.addDay(7);
+	Task_Date4 = Task_Date3.addDay(7);
+	list_Var = {Task_Date1,Task_Date2,Task_Date3,Task_Date4};
+	for each  ele in list_Var
+	{
+		Month = ele.getMonth();
+		Day = ele.getDay();
+		if(Month <= 9)
+		{
+			Month = "0" + Month;
+		}
+		if(Day <= 9)
+		{
+			Day = "0" + Day;
+		}
+		update_date = ele.getYear() + "-" + Month + "-" + Day;
+		map_Var.put("Due_Date",update_date);
+		to_Str = update_date.toString("yyyy-MM-dd");
+		alaram_data.put("ALARM","FREQ=NONE;ACTION=EMAILANDPOPUP;TRIGGER=DATE-TIME:" + to_Str + "T09:00:00+04:00");
+		map_Var.put("Remind_At",alaram_data);
+		crt_Rec = zoho.crm.createRecord("Tasks",map_Var);
+		info crt_Rec;
+	}
+}
+else if(cur_date.toString("EEEE") = "Saturday")
+{
+	Task_Date1 = cur_date.addDay(2);
+	Task_Date2 = Task_Date1.addDay(7);
+	Task_Date3 = Task_Date2.addDay(7);
+	Task_Date4 = Task_Date3.addDay(7);
+	list_Var = {Task_Date1,Task_Date2,Task_Date3,Task_Date4};
+	for each  ele in list_Var
+	{
+		Month = ele.getMonth();
+		Day = ele.getDay();
+		if(Month <= 9)
+		{
+			Month = "0" + Month;
+		}
+		if(Day <= 9)
+		{
+			Day = "0" + Day;
+		}
+		update_date = ele.getYear() + "-" + Month + "-" + Day;
+		map_Var.put("Due_Date",update_date);
+		to_Str = update_date.toString("yyyy-MM-dd");
+		alaram_data.put("ALARM","FREQ=NONE;ACTION=EMAILANDPOPUP;TRIGGER=DATE-TIME:" + to_Str + "T09:00:00+04:00");
+		map_Var.put("Remind_At",alaram_data);
+		crt_Rec = zoho.crm.createRecord("Tasks",map_Var);
+		info crt_Rec;
+	}
+}
+else if(cur_date.toString("EEEE") = "Sunday")
+{
+	Task_Date1 = cur_date.addDay(1);
+	Task_Date2 = Task_Date1.addDay(7);
+	Task_Date3 = Task_Date2.addDay(7);
+	Task_Date4 = Task_Date3.addDay(7);
+	list_Var = {Task_Date1,Task_Date2,Task_Date3,Task_Date4};
+	for each  ele in list_Var
+	{
+		Month = ele.getMonth();
+		Day = ele.getDay();
+		if(Month <= 9)
+		{
+			Month = "0" + Month;
+		}
+		if(Day <= 9)
+		{
+			Day = "0" + Day;
+		}
+		update_date = ele.getYear() + "-" + Month + "-" + Day;
+		map_Var.put("Due_Date",update_date);
+		to_Str = update_date.toString("yyyy-MM-dd");
+		alaram_data.put("ALARM","FREQ=NONE;ACTION=EMAILANDPOPUP;TRIGGER=DATE-TIME:" + to_Str + "T09:00:00+04:00");
+		map_Var.put("Remind_At",alaram_data);
+		crt_Rec = zoho.crm.createRecord("Tasks",map_Var);
+		info crt_Rec;
+	}
+}

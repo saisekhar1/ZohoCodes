@@ -1,0 +1,68 @@
+acc_det = zoho.crm.getRecordById("Accounts",acc_id);
+// info acc_det;
+tax1 = Map();
+tax1.put("Tax_Percentage",null);
+// tax1.put("Tax_Reg_Number","5698748526");
+tax1.put("Tax_Exemption_Code","4268454000000079061");
+tax1.put("Tax_Id",null);
+tax1.put("Tax_Name",null);
+serv_add = Map();
+serv_add.put("Address_Name","address test");
+serv_add.put("Street_1",acc_det.get("Shipping_Street"));
+serv_add.put("Street_2",acc_det.get("Shipping_Street"));
+serv_add.put("City",acc_det.get("Shipping_District"));
+serv_add.put("State",acc_det.get("Shipping_State1"));
+serv_add.put("Zip_Code",acc_det.get("Shipping_Code"));
+serv_add.put("Country",acc_det.get("Shipping_Country1"));
+// serv_add.put("Territory", "1011000000139175");
+// serv_add.put("Tax",tax1);
+bill_add = Map();
+bill_add.put("Address_Name","address");
+bill_add.put("Street_1",acc_det.get("Shipping_Street"));
+bill_add.put("Street_2",acc_det.get("Shipping_Street"));
+bill_add.put("City",acc_det.get("Billing_District"));
+bill_add.put("State",acc_det.get("Billing_State1"));
+bill_add.put("Zip_Code",acc_det.get("Billing_Code"));
+bill_add.put("Country",acc_det.get("Billing_Country1"));
+// bill_add.put("Territory", "1011000000139175");
+// bill_add.put("Tax",tax1);
+data = Map();
+data.put("Company_Name",acc_det.get("Account_Name"));
+data.put("Company_Type",acc_det.get("Account_Type"));
+// data.put("Website",acc_det.get("Website"));
+data.put("Email",acc_det.get("Email"));
+data.put("Phone",acc_det.get("Phone"));
+// data.put("Mobile",acc_det.get(""));
+data.put("Currency",acc_det.get("Currency"));
+// data.put("Exchange_Rate",1);
+// data.put("Service_Address",serv_add);
+// data.put("Billing_Address",bill_add);
+if(acc_det.get("Tax_Treatment") == "vat_registered")
+{
+	data.put("Tax_Treatment","vat_registered");
+	tax1.put("Tax_Reg_Number",acc_det.get("TRN"));
+	data.put("Service_Address",serv_add);
+	data.put("Billing_Address",bill_add);
+}
+else if(acc_det.get("Tax_Treatment") == "vat_not_registered")
+{
+	data.put("Tax_Treatment","vat_not_registered");
+}
+data.put("Tax",tax1);
+info data;
+data_map = {data};
+var1 = Map();
+var1.put("data",data_map);
+info var1;
+response = invokeurl
+[
+	url :"https://fsm.zoho.com/fsm/v1/Companies"
+	type :POST
+	parameters:var1.toString()
+	connection:"fsmconn"
+];
+info response;
+fsm_id = response.get("data").get("Companies").get(0).get("id");
+fsmid = Map();
+fsmid.put("FSM_Record_ID",fsm_id);
+update_rec = zoho.crm.updateRecord("Accounts",acc_id,fsmid);

@@ -1,0 +1,34 @@
+con_det = zoho.crm.getRecordById("Contacts",id);
+info con_det;
+acc = con_det.get("Account_Name");
+if(acc != null)
+{
+	acc_id = acc.get("id");
+	acc_dt = zoho.crm.getRecordById("Accounts",acc_id);
+	book_record_id = acc_dt.get("Books_Record_ID");
+	first_name = con_det.get("First_Name");
+	last_name = con_det.get("Last_Name");
+	salutation = con_det.get("Salutation");
+	mobile_no = con_det.get("Mobile");
+	phone_no = con_det.get("Phone");
+	email = con_det.get("Email");
+	skp = con_det.get("Skype_ID");
+	designation = con_det.get("Designation");
+	department = con_det.get("Department");
+	create_contact_url = "https://www.zohoapis.com/books/v3/contacts/contactpersons?organization_id=816000811";
+	param = {"contact_id":book_record_id,"last_name":last_name,"salutation":salutation,"first_name":first_name,"mobile":mobile_no,"phone":phone_no,"email":email,"department":department,"skype":skp,"designation":designation};
+	info param;
+	s_map = Map();
+	s_map.put("JSONString",param);
+	create_res = invokeurl
+	[
+		url :create_contact_url
+		type :POST
+		parameters:s_map.toMap()
+		connection:"zohobooks"
+	];
+	info create_res;
+	cp = create_res.get("contact_person").get("contact_person_id");
+	info cp;
+	update_res = zoho.crm.updateRecord("Contacts",id,{"Contact_Person_ID":cp});
+}

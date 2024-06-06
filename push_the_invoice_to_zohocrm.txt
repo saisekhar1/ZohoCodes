@@ -1,0 +1,104 @@
+
+/*
+This is a sample function. Uncomment to execute or make changes to this function.
+invoiceID = invoice.get("invoice_id");
+invoicedate = invoice.get("date").toDate();
+organizationID = organization.get("organization_id");
+*/
+info invoice;
+account_name = invoice.get("customer_name");
+subject_name = invoice.get("NA");
+invoice_date = invoice.get("date");
+supply_date = invoice.get("date_formatted");
+currency = invoice.get("currency_symbol");
+book_invoice_no = invoice.get("invoice_number");
+due_date = invoice.get("due_date_formatted");
+//------//
+billing_address = invoice.get("billing_address");
+//info billing_address ;
+billing_attention = billing_address.get("attention");
+billing_country = billing_address.get("country");
+billing_street = billing_address.get("street");
+billing_street_2 = billing_address.get("street2");
+billing_additional_number = billing_address.get("additional_number");
+billing_distric = billing_address.get("district");
+billing_city = billing_address.get("city");
+billing_state = billing_address.get("state");
+billing_code = billing_address.get("zip");
+billing_phone = billing_address.get("phone");
+shipping_address = invoice.get("shipping_address");
+//info shipping_address ;
+shipping_attention = shipping_address.get("attention");
+shipping_country = shipping_address.get("country");
+shipping_street = shipping_address.get("street");
+shipping_street_2 = shipping_address.get("street2");
+shipping_additional_number = shipping_address.get("additional_number");
+shipping_distric = shipping_address.get("district");
+shipping_city = shipping_address.get("city");
+shipping_state = shipping_address.get("state");
+shipping_code = shipping_address.get("zip");
+shipping_phone = shipping_address.get("phone");
+subform = invoice.get("line_items");
+//info subform ;
+subform_list = List();
+for each  var1 in subform
+{
+	//	product = var1.get("name").get("id");
+	product = "4268454000000490371";
+	response = invokeurl
+	[
+		url :"https://www.zohoapis.com/books/v3/items/" + product + "?organization_id=816000811"
+		type :GET
+		connection:"books"
+	];
+	info "-------------------------------------";
+	info response;
+	info "-------------------------------------";
+	quantity = var1.get("quantity");
+	list_price = var1.get("rate");
+	discount = var1.get("discount_amount");
+	subform_map = Map();
+	subform_map.put("Product_Name","5988486000002765400");
+	subform_map.put("Quantity",quantity);
+	subform_map.put("List_Price",list_price);
+	subform_map.put("Discount",discount);
+	subform_list.add(subform_map);
+}
+main_map = Map();
+main_map.put("Account_Name",account_name);
+main_map.put("Subject","subject name");
+main_map.put("Invoice_Date",invoice_date);
+//main_map.put("Supply_Date", supply_date);
+main_map.put("Books_Invoice_Number",book_invoice_no);
+// main_map.put("Due_Date", due_date);
+main_map.put("Billing_Attention",billing_attention);
+main_map.put("Billing_Country",billing_country);
+main_map.put("Billing_Street",billing_street + billing_street_2);
+main_map.put("Billing_Additional_Number",billing_additional_number);
+main_map.put("Billing_District",billing_distric);
+main_map.put("Billing_City",billing_city);
+main_map.put("Billing_State",billing_state);
+main_map.put("Billing_Code",billing_code);
+main_map.put("Billing_Phone",billing_phone);
+main_map.put("Shipping_Attention",shipping_attention);
+main_map.put("Shipping_Country",shipping_country);
+main_map.put("Shipping_Street",shipping_street + shipping_street_2);
+main_map.put("Shipping_Additional_Number",shipping_additional_number);
+main_map.put("Shipping_District",shipping_distric);
+main_map.put("Shipping_City",shipping_city);
+main_map.put("Shipping_State",shipping_state);
+main_map.put("Shipping_Code",shipping_code);
+main_map.put("Shipping_Phone",shipping_phone);
+main_map.put("Entity","5988486000001304006");
+main_map.put("Invoiced_Items",subform_list);
+data = Map();
+data.put("data",{main_map});
+info data;
+response = invokeurl
+[
+	url :"https://www.zohoapis.com/crm/v6/Invoices"
+	type :post
+	parameters:data.tostring()
+	connection:"crm"
+];
+info response;

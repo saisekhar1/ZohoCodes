@@ -1,0 +1,371 @@
+response = invokeurl
+[
+	url :"https://www.zohoapis.com/crm/v6/Sales_Orders/" + Rec_id
+	type :GET
+	connection:"zoho_crm"
+];
+//info response ;
+acc_name = response.getJSON("data").getJSON("Account_Name").getJSON("name");
+//info acc_name ;
+entity = response.getJSON("data").getJSON("Entities").getJSON("name");
+acc_id = response.getJSON("data").getJSON("Account_Name").getJSON("id");
+billing_id = response.getJSON("data").getJSON("Billing_Address").getJSON("id");
+billing_att = response.getJSON("data").getJSON("Billing_Address").getJSON("name");
+shippinging_id = response.getJSON("data").getJSON("Shipping_Address").getJSON("id");
+shippinging_att = response.getJSON("data").getJSON("Shipping_Address").getJSON("name");
+// info acc_id ;
+// info billing_id ;
+// info shippinging_id ;
+Acc_details = zoho.crm.getRecordById("Accounts",acc_id);
+book_rec_id = Acc_details.getJSON("Books_Record_ID");
+map1 = Map();
+map1.put("contact_name",acc_name);
+map1.put("company_name",acc_name);
+if(book_rec_id == null)
+{
+	info "enter the books rec id if";
+	if(entity == "MOOD Creative DMCC")
+	{
+		info "MOOD Creative DMCC";
+		//========================create contact in Zoho books============================
+		create_record = zoho.books.createRecord("contacts",848585790,map1,"zohobooks");
+		cont_id = create_record.getJSON("contact").getJSON("contact_id");
+	}
+	else if(entity == "Mood Creative Information Technologies")
+	{
+		info "Mood Creative Information Technologies";
+		//========================create contact in Zoho books============================
+		create_record = zoho.books.createRecord("contacts",816000811,map1,"zohobooks");
+		cont_id = create_record.getJSON("contact").getJSON("contact_id");
+	}
+	else if(entity == "Soundmeworld FZE")
+	{
+		info "Soundmeworld FZE";
+		//========================create contact in Zoho books============================
+		create_record = zoho.books.createRecord("contacts",848585786,map1,"zohobooks");
+		info create_record;
+		cont_id = create_record.getJSON("contact").getJSON("contact_id");
+		info "customer id" + cont_id;
+	}
+	book_rec_id = cont_id;
+	C_map = Map();
+	C_map.put("Books_Record_ID",book_rec_id);
+	update_crm = zoho.crm.updateRecord("Accounts",acc_id,C_map);
+	info "update" + update_crm;
+}
+else
+{
+	account_get = zoho.crm.getRecordById("Accounts",acc_id);
+	cont_id = account_get.getJSON("Books_Record_ID");
+}
+if(billing_id == shippinging_id)
+{
+	get_billing_address_rec = zoho.crm.getRecordById("Account_Address",billing_id);
+	books_rec_id = get_billing_address_rec.getJSON("Books_Address_ID");
+	get_address_rec_id = books_rec_id;
+	// 	info get_billing_address_rec ;
+	if(books_rec_id == null)
+	{
+		billing_attention = get_billing_address_rec.getJSON("Name");
+		billing_country = get_billing_address_rec.getJSON("Country_Region");
+		billing_buildingnumber = get_billing_address_rec.getJSON("Building_Number");
+		billing_street = get_billing_address_rec.getJSON("Street");
+		billing_city = get_billing_address_rec.getJSON("City");
+		billing_state = get_billing_address_rec.getJSON("State");
+		billing_zipcode = get_billing_address_rec.getJSON("Zip_Code");
+		parameters_data = Map();
+		parameters_data.put("attention",billing_attention);
+		parameters_data.put("address",billing_buildingnumber);
+		parameters_data.put("street2",billing_street);
+		parameters_data.put("city",billing_city);
+		parameters_data.put("state",billing_state);
+		parameters_data.put("zip",billing_zipcode);
+		parameters_data.put("country",billing_country);
+		if(entity == "MOOD Creative DMCC")
+		{
+			response_DMCC = invokeurl
+			[
+				url :"https://www.zohoapis.com/books/v3/contacts/" + book_rec_id + "/address?organization_id=848585790"
+				type :POST
+				parameters:parameters_data.toString()
+				connection:"zohobooks"
+			];
+			get_address_rec_id = response_DMCC.getJSON("address_info").getJSON("address_id");
+		}
+		else if(entity == "Mood Creative Information Technologies")
+		{
+			response = invokeurl
+			[
+				url :"https://www.zohoapis.com/books/v3/contacts/" + book_rec_id + "/address?organization_id=816000811"
+				type :POST
+				parameters:parameters_data.toString()
+				connection:"zohobooks"
+			];
+			get_address_rec_id = response.getJSON("address_info").getJSON("address_id");
+		}
+		else if(entity == "Soundmeworld FZE")
+		{
+			/*
+			response_FZE = invokeurl
+			[
+				url :"https://www.zohoapis.com/books/v3/contacts/" + book_rec_id + "/address?organization_id=848585786"
+				type :POST
+				parameters:parameters_data.toString()
+				connection:"zohobooks"
+			];
+			get_address_rec_id = response_FZE.getJSON("address_info").getJSON("address_id");
+			info "address rec id" + get_address_rec_id  ;
+			*/
+		}
+		A_map = Map();
+		A_map.put("Books_Address_ID",get_address_rec_id);
+		update_rec_id = zoho.crm.updateRecord("Account_Address",billing_id,A_map);
+	}
+}
+//======add additional address in Zoho Books Customer module=========
+else
+{
+	info "else";
+	get_billing_address_rec = zoho.crm.getRecordById("Account_Address",billing_id);
+	billing_books_rec_id = get_billing_address_rec.getJSON("Books_Address_ID");
+	// 	info billing_books_rec_id;
+	get_billing_address_rec_id = billing_books_rec_id;
+	if(billing_books_rec_id == null)
+	{
+		billing_attention = get_billing_address_rec.getJSON("Name");
+		billing_country = get_billing_address_rec.getJSON("Country_Region");
+		billing_buildingnumber = get_billing_address_rec.getJSON("Building_Number");
+		billing_street = get_billing_address_rec.getJSON("Street");
+		billing_city = get_billing_address_rec.getJSON("City");
+		billing_state = get_billing_address_rec.getJSON("State");
+		billing_zipcode = get_billing_address_rec.getJSON("Zip_Code");
+		parameters_data = Map();
+		parameters_data.put("attention",billing_attention);
+		parameters_data.put("address",billing_buildingnumber);
+		parameters_data.put("street2",billing_street);
+		parameters_data.put("city",billing_city);
+		parameters_data.put("state",billing_state);
+		parameters_data.put("zip",billing_zipcode);
+		parameters_data.put("country",billing_country);
+		if(entity == "MOOD Creative DMCC")
+		{
+			response_DMCC = invokeurl
+			[
+				url :"https://www.zohoapis.com/books/v3/contacts/" + book_rec_id + "/address?organization_id=848585790"
+				type :POST
+				parameters:parameters_data.toString()
+				connection:"zohobooks"
+			];
+			get_billing_address_rec_id = response_DMCC.getJSON("address_info").getJSON("address_id");
+		}
+		else if(entity == "Mood Creative Information Technologies")
+		{
+			response = invokeurl
+			[
+				url :"https://www.zohoapis.com/books/v3/contacts/" + book_rec_id + "/address?organization_id=816000811"
+				type :POST
+				parameters:parameters_data.toString()
+				connection:"zohobooks"
+			];
+			info response;
+			get_billing_address_rec_id = response.getJSON("address_info").getJSON("address_id");
+		}
+		else if(entity == "Soundmeworld FZE")
+		{
+			response_FZE = invokeurl
+			[
+				url :"https://www.zohoapis.com/books/v3/contacts/" + book_rec_id + "/address?organization_id=848585786"
+				type :POST
+				parameters:parameters_data.toString()
+				connection:"zohobooks"
+			];
+			get_billing_address_rec_id = response_FZE.getJSON("address_info").getJSON("address_id");
+		}
+		A_map = Map();
+		A_map.put("Books_Address_ID",get_billing_address_rec_id);
+		update_rec_id = zoho.crm.updateRecord("Account_Address",billing_id,A_map);
+	}
+	///-----------------------------------------///
+	get_shipping_address_rec = zoho.crm.getRecordById("Account_Address",shippinging_id);
+	shipping_books_rec_id = get_billing_address_rec.getJSON("Book_rec_Id");
+	get_Shipping_address_rec_id = shipping_books_rec_id;
+	info shipping_books_rec_id;
+	if(shipping_books_rec_id == null)
+	{
+		shipping_attention = get_shipping_address_rec.getJSON("Name");
+		shipping_country = get_shipping_address_rec.getJSON("Country_Region");
+		shipping_buildingnumber = get_shipping_address_rec.getJSON("Building_Number");
+		shipping_street = get_shipping_address_rec.getJSON("Street");
+		shipping_city = get_shipping_address_rec.getJSON("City");
+		shipping_state = get_shipping_address_rec.getJSON("State");
+		shipping_zipcode = get_shipping_address_rec.getJSON("Zip_Code");
+		parameters_data1 = Map();
+		parameters_data1.put("attention",shipping_attention);
+		parameters_data1.put("address",shipping_buildingnumber);
+		parameters_data1.put("street2",shipping_street);
+		parameters_data1.put("city",shipping_city);
+		parameters_data1.put("state",shipping_state);
+		parameters_data1.put("zip",shipping_zipcode);
+		parameters_data1.put("country",shipping_country);
+		if(entity == "MOOD Creative DMCC")
+		{
+			shipping_response_1_DMCC = invokeurl
+			[
+				url :"https://www.zohoapis.com/books/v3/contacts/" + book_rec_id + "/address?organization_id=848585790"
+				type :POST
+				parameters:parameters_data1.toString()
+				connection:"zohobooks"
+			];
+			get_Shipping_address_rec_id = shipping_response_1_DMCC.getJSON("address_info").getJSON("address_id");
+		}
+		else if(entity == "Mood Creative Information Technologies")
+		{
+			shipping_response_1 = invokeurl
+			[
+				url :"https://www.zohoapis.com/books/v3/contacts/" + book_rec_id + "/address?organization_id=816000811"
+				type :POST
+				parameters:parameters_data1.toString()
+				connection:"zohobooks"
+			];
+			get_Shipping_address_rec_id = shipping_response_1.getJSON("address_info").getJSON("address_id");
+		}
+		else if(entity == "Soundmeworld FZE")
+		{
+			shipping_response_1_FZE = invokeurl
+			[
+				url :"https://www.zohoapis.com/books/v3/contacts/" + book_rec_id + "/address?organization_id=848585786"
+				type :POST
+				parameters:parameters_data1.toString()
+				connection:"zohobooks"
+			];
+			get_Shipping_address_rec_id = shipping_response_1_FZE.getJSON("address_info").getJSON("address_id");
+		}
+		B_map = Map();
+		B_map.put("Books_Address_ID",get_Shipping_address_rec_id);
+		update_rec_id_1 = zoho.crm.updateRecord("Account_Address",shippinging_id,B_map);
+	}
+}
+//---------------Create sales order--------------------//
+line_item = response.getJSON("data").getJSON("Ordered_Items");
+parammap = Map();
+if(entity == "MOOD Creative DMCC")
+{
+	subform_list = List();
+	for each  var1 in line_item
+	{
+		product = var1.getJSON("Product_Name").getJSON("name");
+		quantity = var1.getJSON("Quantity");
+		rate = var1.getJSON("");
+		tax = var1.getJSON("");
+		subform_map = Map();
+		subform_map.put("item_order",product);
+		subform_map.put("quantity",quantity);
+		subform_map.put("rate",rate);
+		subform_list.add(subform_map);
+	}
+	parammap.put("customer_id",cont_id);
+	if(billing_id == shippinging_id)
+	{
+		parammap.put("billing_address_id",get_address_rec_id);
+		parammap.put("shipping_address_id",get_address_rec_id);
+	}
+	else
+	{
+		parammap.put("billing_address_id",get_billing_address_rec_id);
+		parammap.put("shipping_address_id",get_Shipping_address_rec_id);
+	}
+	parammap.put("line_items",subform_list);
+	info parammap;
+	n_map = Map();
+	n_map.put("JSONString",parammap.toText());
+	info n_map;
+	create_salesorder = invokeurl
+	[
+		url :"https://www.zohoapis.com/books/v3/salesorders?organization_id=848585790"
+		type :POST
+		parameters:n_map.toMap()
+		connection:"zohobooks"
+	];
+}
+else if(entity == "Mood Creative Information Technologies")
+{
+	subform_list = List();
+	for each  var1 in line_item
+	{
+		product = var1.getJSON("Product_Name").getJSON("name");
+		quantity = var1.getJSON("Quantity");
+		rate = var1.getJSON("");
+		tax = var1.getJSON("");
+		subform_map = Map();
+		subform_map.put("item_order",product);
+		subform_map.put("quantity",quantity);
+		subform_map.put("rate",rate);
+		subform_list.add(subform_map);
+	}
+	parammap.put("customer_id",cont_id);
+	if(billing_id == shippinging_id)
+	{
+		parammap.put("billing_address_id",get_address_rec_id);
+		parammap.put("shipping_address_id",get_address_rec_id);
+	}
+	else
+	{
+		parammap.put("billing_address_id",get_billing_address_rec_id);
+		parammap.put("shipping_address_id",get_Shipping_address_rec_id);
+	}
+	parammap.put("line_items",subform_list);
+	info parammap;
+	n_map = Map();
+	n_map.put("JSONString",parammap.toText());
+	info n_map;
+	create_salesorder = invokeurl
+	[
+		url :"https://www.zohoapis.com/books/v3/salesorders?organization_id=816000811"
+		type :POST
+		parameters:n_map.toMap()
+		connection:"zohobooks"
+	];
+}
+else if(entity == "Soundmeworld FZE")
+{
+	subform_list = List();
+	for each  var1 in line_item
+	{
+		product = var1.getJSON("Product_Name").getJSON("id");
+		quantity = var1.getJSON("Quantity");
+		rate = var1.getJSON("Unit_price");
+		tax = var1.getJSON("");
+		subform_map = Map();
+		get_product = zoho.crm.getRecordById("Products",product);
+		item_id = get_product.getJSON("Books_Rec_ID");
+		subform_map.put("item_id",item_id);
+		subform_map.put("quantity",quantity);
+		subform_map.put("rate",rate);
+		subform_list.add(subform_map);
+	}
+	parammap.put("customer_id",cont_id);
+	if(billing_id == shippinging_id)
+	{
+		parammap.put("billing_address_id",get_address_rec_id);
+		parammap.put("shipping_address_id",get_address_rec_id);
+	}
+	else
+	{
+		parammap.put("billing_address_id",get_billing_address_rec_id);
+		parammap.put("shipping_address_id",get_Shipping_address_rec_id);
+	}
+	parammap.put("line_items",subform_list);
+	info "------------------------";
+	info parammap;
+	n_map = Map();
+	n_map.put("JSONString",parammap.toText());
+	//info n_map;
+	create_salesorder = invokeurl
+	[
+		url :"https://www.zohoapis.com/books/v3/salesorders?organization_id=848585786"
+		type :POST
+		parameters:parammap.toString()
+		connection:"zohobooks"
+	];
+	info "create salesorder " + create_salesorder;
+}

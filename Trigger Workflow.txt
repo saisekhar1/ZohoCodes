@@ -1,0 +1,45 @@
+data1 = invokeurl
+[
+	url :"https://www.zohoapis.com/crm/v6/Quotes/" + id
+	type :GET
+	connection:"zoho_crm"
+];
+// info data1;
+product = data1.get("data").get(0).get("Quoted_Items");
+info product;
+flag = 0;
+gd_total = data1.get("data").get(0).get("Grand_Total");
+if(gd_total >= 50000)
+{
+	map1 = Map();
+	map1.put("Send_for_Approval","Yes");
+	map1.put("Status","Pending Approval");
+	update_rec = zoho.crm.updateRecord("Quotes",id,map1);
+	info update_rec;
+}
+else
+{
+	for each  ele in product
+	{
+		margin = ele.get("Margin");
+		if(margin <= 15)
+		{
+			flag = 1;
+			info "*************";
+			map3 = Map();
+			map3.put("Send_for_Approval","Yes");
+			map3.put("Status","Pending Approval");
+			update_rec = zoho.crm.updateRecord("Quotes",id,map3);
+			info update_rec;
+			break;
+		}
+	}
+	if(flag == 0)
+	{
+		map2 = Map();
+		map2.put("Send_for_Approval","No");
+		map2.put("Status","New");
+		update_rec = zoho.crm.updateRecord("Quotes",id,map2);
+		info update_rec;
+	}
+}

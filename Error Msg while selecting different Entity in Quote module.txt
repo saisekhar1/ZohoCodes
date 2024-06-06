@@ -1,0 +1,28 @@
+quote_det = zoho.crm.getRecordById("Quotes",quote_id);
+// info quote_det;
+acc_name = quote_det.get("Account_Name");
+ent = quote_det.get("Entities_1").get("name");
+info ent;
+if(acc_name != null)
+{
+	acc_id = acc_name.get("id");
+	acc = zoho.crm.getRecordById("Accounts",acc_id);
+	info acc;
+	entity = acc.get("Entity").get("name");
+	if(entity != ent)
+	{
+		mp1 = Map();
+		mp1.put("Response","Account entity is different from Quote entity");
+		//mp1.put("Trigger_Workflow1","");
+		update_response_field1 = zoho.crm.updateRecord("Quotes",quote_id,mp1);
+		info update_response_field1;
+	}
+	else
+	{
+		mp2 = Map();
+		mp2.put("Response","");
+		// 		mp2.put("Trigger_Workflow1","");
+		update_response_field2 = zoho.crm.updateRecord("Quotes",quote_id,mp2);
+		info update_response_field2;
+	}
+}

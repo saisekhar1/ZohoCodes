@@ -1,0 +1,47 @@
+
+rec_id = item.get("item_id");
+org_id = organization.get("organization_id");
+get_data = zoho.books.getRecordsByID("items",org_id,rec_id,"books");
+info get_data;
+get_item = get_data.getJSON("item");
+// info get_item;
+mp1 = Map();
+mp1.put("Product_Name",get_item.get("name"));
+mp1.put("Product_Type",get_item.get("product_type"));
+mp1.put("Usage_Unit",get_item.getJSON("unit"));
+mp1.put("Product_Currency","AED");
+mp1.put("SKU",get_item.get("sku"));
+mp1.put("Purchase_Cost_1",get_item.get("purchase_rate"));
+mp1.put("Description",get_item.getJSON("description"));
+mp1.put("Books_Rec_ID",get_item.get("item_id"));
+mp1.put("Rate",20);
+info mp1;
+// searchResp = zoho.crm.searchRecords("Products","((Books_Rec_ID:equals:" + get_item.get("item_id") + "))");
+// info searchResp;
+// info searchResp.size();
+// if(searchResp.size() > 0)
+// {
+// 	info "update";
+// 	crm_id = searchResp.getJSON("id");
+// 	info crm_id;
+// 	upd_rec = zoho.crm.updateRecord("Products",crm_id,mp1);
+// 	info upd_rec;
+// }
+// else
+// {
+// 	info "create";
+create_rec = zoho.crm.createRecord("Products",mp1);
+info create_rec;
+CRM_rID = create_rec.get("id");
+info CRM_rID;
+C_map = Map();
+C_map.put("label","CRM Record ID");
+C_map.put("value",create_rec.get("id"));
+list2 = list();
+list2.add(C_map);
+list1 = Map();
+list1.put("custom_fields",list2);
+info list1;
+upd_rec = zoho.books.updateRecord("items",org_id,rec_id,list1,"books");
+info upd_rec;
+//}

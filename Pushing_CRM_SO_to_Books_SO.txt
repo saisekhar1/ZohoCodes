@@ -1,0 +1,62 @@
+data1 = invokeurl
+[
+	url :" https://www.zohoapis.com/crm/v6/Sales_Orders/" + id
+	type :GET
+	connection:"zoho_crm"
+];
+info data1;
+subform = data1.get("data").get(0).get("Ordered_Items");
+info subform;
+newsalesorder1 = list();
+for each  ele in subform
+{
+	main = Map();
+	main.put("name",ele.get("Product_Name").get("name"));
+	main.put("discount",ele.get("Discount"));
+	main.put("rate",ele.get("Unit_price"));
+	main.put("quantity",ele.get("Quantity"));
+	main.put("Description",ele.get("description"));
+	newsalesorder1.add(main);
+}
+accountname = data1.get("data").get(0).get("Account_Name").get("name");
+// info accountname;
+searchParam = {"contact_name":accountname};
+conatactdata = zoho.books.getRecords("Contacts","816000811",searchParam,"zohobooks");
+// info "Contact search result: " + conatactdata;
+contactsize = conatactdata.get("contacts");
+info contactsize;
+// info "Contact Details: " + contactsize;
+info contactsize.size() + "----------------";
+if(contactsize.size() == 0)
+{
+	info "Customer is not available in Inventory";
+}
+else
+{
+	if(contactsize.size() > 1)
+	{
+		info "Customer name Is Duplicate";
+	}
+	if(contactsize.size() == 1)
+	{
+		info "hello";
+		contactid = conatactdata.get("contacts").toMap().get("contact_id");
+		newsaleorder = Map();
+		newsaleorder.put("reference_number",data1.get("data").get(0).get("id"));
+		newsaleorder.put("date",data1.get("data").get(0).get("Date"));
+		newsaleorder.put("line_items",newsalesorder1);
+		newsaleorder.put("customer_id",contactid);
+		newsaleorder.put("place_of_supply","SA");
+		// 		newsaleorder.put("reference_number",getrec.get("Sales_Order_No"));
+		info newsaleorder;
+		sale_order_params = Map();
+		create_so = invokeurl
+		[
+			url :"https://www.zohoapis.com/books/v3/salesorders?organization_id=816000811"
+			type :POST
+			parameters:newsaleorder.toString()
+			connection:"zohobooks"
+		];
+		info create_so;
+	}
+}

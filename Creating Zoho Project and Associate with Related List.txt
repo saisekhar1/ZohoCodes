@@ -1,0 +1,50 @@
+var = zoho.crm.getRecordById("Deals",Rec_id);
+// info var ;
+deal_name = var.getJSON("Deal_Name");
+info deal_name;
+start_date1 = "05-10-2024";
+// start_date1 = var.getJSON("Project_Start_Date").toDate();
+// // info start_date1;
+// get_month = start_date1.getSuffix("-").getPrefix("-");
+// // info get_month ;
+// getdate = start_date1.getDay();
+// info getdate;
+// getyear = start_date1.getYear();
+// // info getyear;
+// formattedDate = get_month+"-"+getdate+"-"+getyear;
+// info formattedDate;
+end_date = var.getJSON("Closing_Date").toDate();
+get_month1 = end_date.getSuffix("-").getPrefix("-");
+info get_month1;
+getdate1 = end_date.getDay();
+info getdate1;
+getyear1 = end_date.getYear();
+info getyear1;
+formattedendDate = get_month1 + "-" + getdate1 + "-" + getyear1;
+info formattedendDate;
+PortalName = "maricarmoodgccdotae";
+createMap = Map();
+createMap.put("name",deal_name);
+createMap.put("description","test description");
+createMap.put("template_id",2197240000000161001);
+// createMap.put("start_date",start_date1);
+// createMap.put("end_date",formattedendDate);
+info createMap;
+response = zoho.projects.createProject(PortalName,createMap,"zohoprojects");
+info "---------------------";
+info response;
+proj_id = response.get("projects").get(0).get("id");
+info proj_id;
+datalist = List();
+datalist.add(createMap);
+datamp = Map();
+datamp.put("data",datalist);
+info "----------------";
+res = invokeurl
+[
+	url :"https://www.zohoapis.com/crm/v6/Deals/" + Rec_id + "/Zoho_Projects/" + proj_id
+	type :POST
+	parameters:datamp.toString()
+	connection:"zoho_crm"
+];
+info res;

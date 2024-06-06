@@ -1,0 +1,129 @@
+var = zoho.crm.getRecordById("Asset",Rec_id);
+info var;
+contact_id = var.getJSON("Contact_person_name");
+account_id = var.getJSON("Account").getJSON("id");
+info account_id;
+mail_id = var.getJSON("Contact_email_id");
+phone_no = var.getJSON("Contact_Phone");
+currency = var.getJSON("Currency");
+// mobile_no = var.getJSON("Mobile");
+ser_address_name = var.getJSON("Shipping_SIte_Name").getJSON("name");
+ser_buld_no = var.getJSON("Shipping_Building_No");
+ser_street = var.getJSON("Shipping_Street");
+ser_city = var.getJSON("Shipping_City");
+ser_state = var.getJSON("Shipping_State");
+ser_zip = var.getJSON("Shipping_Zip_Code").toString();
+ser_country = var.getJSON("Shipping_Country");
+ser_distric = var.getJSON("Shipping_District");
+bil_address_name = var.getJSON("Billing_Site_Name").getJSON("name");
+bil_street = var.getJSON("Billing_Street");
+bil_build_no = var.getJSON("Billing_Building_No");
+bil_city = var.getJSON("Billing_City");
+bil_state = var.getJSON("Billing_state");
+bil_zip = var.getJSON("Billing_Zip_Code").toString();
+bil_country = var.getJSON("Billing_Country");
+bil_distric = var.getJSON("Billing_District");
+get_account_rec = zoho.crm.getRecordById("Accounts",account_id);
+get_fsm_account_id = get_account_rec.getJSON("FSM_Record_ID");
+fsm_customer_rec_id = get_account_rec.getJSON("FSM_Record_ID");
+tax_treatment = get_account_rec.getJSON("Tax_Treatment");
+contact_map = Map();
+if(tax_treatment == "vat_registered")
+{
+	trn = get_account_rec.getJSON("TRN");
+	contact_tax = Map();
+	contact_tax.put("Tax_Reg_Number",trn);
+	contact_tax.put("Tax_Id",null);
+}
+else
+{
+	contact_tax = Map();
+	contact_tax.put("Tax_Id",null);
+}
+contact_map.put("Last_Name",contact_id);
+contact_map.put("Email",mail_id);
+contact_map.put("Phone",phone_no);
+//contact_map.put("Mobile",mobile_no);
+contact_map.put("Currency",currency);
+contact_map.put("Company",get_fsm_account_id);
+contact_map.put("Tax_Treatment",tax_treatment);
+//contact_map.put("Place_of_Supply","SA");
+contact_ser_add = Map();
+contact_ser_add.put("Address_Name",ser_address_name);
+contact_ser_add.put("Street_1",ser_street);
+// contact_ser_add.put("Street_2","Service Address");
+contact_ser_add.put("City",ser_city);
+contact_ser_add.put("State",ser_state);
+contact_ser_add.put("Zip_Code",ser_zip);
+contact_ser_add.put("Country",ser_country);
+contact_bill_add = Map();
+contact_bill_add.put("Address_Name",bil_address_name);
+contact_bill_add.put("Street_1",bil_street);
+//contact_bill_add.put("Street_2","Service Address");
+contact_bill_add.put("City",bil_city);
+contact_bill_add.put("State",bil_state);
+contact_bill_add.put("Zip_Code",bil_zip);
+contact_bill_add.put("Country",bil_country);
+contact_map.put("Service_Address",contact_ser_add);
+contact_map.put("Billing_Address",contact_bill_add);
+contact_map.put("Tax",contact_tax);
+contact_data_map = Map();
+contact_data_map.put("data",{contact_map});
+//info contact_data_map ;
+response = invokeurl
+[
+	url :"https://fsm.zoho.com/fsm/v1/Contacts"
+	type :POST
+	parameters:contact_data_map.toString()
+	connection:"fsmconn"
+];
+info response;
+fsm_contact_id = response.getJSON("data").getJSON("Contacts").getJSON("id");
+info fsm_contact_id;
+//------------------------------part creation---------------//
+part_name = var.getJSON("Name");
+part_price = var.getJSON("Price");
+info part_name;
+info part_price;
+//part_describtion = var.get(<OBJECT>);
+//part_unit = var.getJSON();
+part_map = Map();
+part_map.put("Name",part_name);
+part_map.put("Unit","Pieces");
+part_map.put("Unit_Price",0);
+part_map.put("Type","goods");
+part_tax = Map();
+part_tax.put("Tax_Id","4268454000000079061");
+part_tax.put("Tax_Name","Standard Rate [15%]");
+part_map.put("Tax",part_tax);
+part_data_map = Map();
+part_data_map.put("data",{part_map});
+//info part_data_map ;
+response_1 = invokeurl
+[
+	url :"https://fsm.zoho.com/fsm/v1/Service_And_Parts"
+	type :POST
+	parameters:part_data_map.toString()
+	connection:"fsmconn"
+];
+info response_1;
+part_rec_id = response_1.getJSON("data").getJSON("Service_And_Parts").getJSON("id");
+info "-------------------------";
+crm_map = Map();
+//crm_map = zoho.crm.getRecordById("FSM_Record_ID",part_rec_id);
+crm_map.put("FSM_Record_ID",part_rec_id);
+info crm_map;
+update_fsm_id = zoho.crm.updateRecord("Asset",Rec_id,crm_map);
+info update_fsm_id;
+//-------------------Workorder creation ---------------------//
+payload = {"data":{{"Summary":part_name,"Priority":"Low","Type":"Service","Due_Date":"2024-03-08","Contact":fsm_contact_id,"Email":mail_id,"Phone":phone_no,"Service_Address":{"Service_Address_Name":ser_address_name + ", " + ser_buld_no,"Service_Street_1":ser_street,"Service_City":ser_distric + ", " + ser_city,"Service_State":ser_state,"Service_Zip_Code":ser_zip,"Service_Country":ser_country},"Billing_Address":{"Billing_Address_Name":bil_address_name + ", " + bil_build_no,"Billing_Street_1":bil_street,"Billing_City":bil_distric + ", " + bil_city,"Billing_State":bil_state,"Billing_Zip_Code":bil_zip,"Billing_Country":bil_country},"Service_Line_Items":{{"Service":"9023000000275433","Part_Line_Items":{{"Part":part_rec_id}}}}}}};
+//
+info payload;
+createWorkOrder = invokeurl
+[
+	url :"https://fsm.zoho.com/fsm/v1/Work_Orders"
+	type :POST
+	parameters:payload.toString()
+	connection:"fsmconn"
+];
+info createWorkOrder;
